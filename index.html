@@ -92,21 +92,21 @@ input, button {
             text: '',
             error: ''
           };
-          this.create = this.create.bind(this);
+          this.update = this.update.bind(this);
         }
-        create(){
-          this.props.create({ text: this.state.text })
+        update(){
+          this.props.updateNote({ text: this.state.text, id:this.props.match.params.id})
             .then(()=> this.props.history.push('/notes'))
             .catch( ex => this.setState({ error: ex.response.data.message }));
         }
         render(){
           const { text, error } = this.state;
-          const { create } = this;
+          const { update } = this;
           return (
             <form onSubmit = { ev => ev.preventDefault() }>
               { !!error && <div className='error'>{error }</div>  }
               <input value={ text } placeholder='update note' onChange={ (ev)=> this.setState({ text: ev.target.value }) }/>
-              <button disabled={ !text } onClick={ create }>Update</button>
+              <button disabled={ !text } onClick={ update }>Update</button>
             </form>
           );
         }
@@ -123,7 +123,7 @@ input, button {
         }
         create(){
           this.props.create({ text: this.state.text })
-            .then(()=> this.props.history.push('/notes'))
+            .then(()=> this.props.history.push('/notes/'))
             .catch( ex => this.setState({ error: ex.response.data.message }));
         }
         render(){
@@ -149,6 +149,7 @@ input, button {
           this.update = this.update.bind(this);
           this.create = this.create.bind(this);
           this.destroy = this.destroy.bind(this);
+          this.updateNote = this.updateNote.bind(this);
         }
         async destroy(note){
           await axios.delete(`${API}/users/${this.state.user.id}/notes/${note.id}`);
@@ -169,14 +170,13 @@ input, button {
           this.setState({ notes });
         }
         async updateNote(note){
+          console.log(note);
           const updated = (await axios.put(`${API}/users/${this.state.user.id}/notes/${note.id}`, { archived: note.archived, text: note.text })).data;
-          const notes = [...this.state.notes, updated ];
-          this.setState({ notes })
-
+          this.setState({ notes : this.state.notes.map( note => note.id === updated.id ? updated : note)});
         }
         render(){
           const { notes, user } = this.state;
-          const { update, create, destroy } = this;
+          const { update, create, destroy, updateNote } = this;
           return (
             <HashRouter>
               <Route render={ ({ location } )=> <Nav path={ location.pathname } notes={ notes } />} />
@@ -185,7 +185,7 @@ input, button {
                 <Route exact path='/notes' render={ ()=> <Notes destroy={ destroy} archived={ false } notes={ notes} update={ update }/> } />
                 <Route path='/notes/create' render={ ({ history })=> <Create history={ history } create={ create } notes={ notes } /> } />
                 <Route path='/archived' render={ ()=> <Notes destroy={ destroy } archived={ true } notes={ notes} update={ update }/> } />
-                <Route path='/notes/:id' render={ ()=> <Update /> }/>
+                <Route path='/notes/:id' render={ (props)=> <Update {...props} updateNote={ updateNote } notes={ notes }/> }/>
                 <Redirect to='/notes' />
               </Switch>
             </HashRouter>
