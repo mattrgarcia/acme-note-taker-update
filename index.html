@@ -168,6 +168,12 @@ input, button {
           const notes = [...this.state.notes, created ];
           this.setState({ notes });
         }
+        async updateNote(note){
+          const updated = (await axios.put(`${API}/users/${this.state.user.id}/notes/${note.id}`, { archived: note.archived, text: note.text })).data;
+          const notes = [...this.state.notes, updated ];
+          this.setState({ notes })
+
+        }
         render(){
           const { notes, user } = this.state;
           const { update, create, destroy } = this;
@@ -179,7 +185,7 @@ input, button {
                 <Route exact path='/notes' render={ ()=> <Notes destroy={ destroy} archived={ false } notes={ notes} update={ update }/> } />
                 <Route path='/notes/create' render={ ({ history })=> <Create history={ history } create={ create } notes={ notes } /> } />
                 <Route path='/archived' render={ ()=> <Notes destroy={ destroy } archived={ true } notes={ notes} update={ update }/> } />
-                <Route path='/notes/:id' component={ Update }/>
+                <Route path='/notes/:id' render={ ()=> <Update /> }/>
                 <Redirect to='/notes' />
               </Switch>
             </HashRouter>
