@@ -93,7 +93,6 @@ input, button {
       class Update extends Component{
         constructor({ match, notes}){
           super();
-          console.log(match);
           const found = notes.find( note => note.id === match.params.id);
           this.state = {
             text: found ? found.text : '',
@@ -191,7 +190,7 @@ input, button {
                 <Route exact path='/notes' render={ ()=> <Notes destroy={ destroy} archived={ false } notes={ notes} update={ update }/> } />
                 <Route path='/notes/create' render={ ({ history })=> <Create history={ history } create={ create } notes={ notes } /> } />
                 <Route path='/archived' render={ ()=> <Notes destroy={ destroy } archived={ true } notes={ notes} update={ update }/> } />
-                <Route path='/notes/:id' render={ ({ match })=> <Update match={ match } updateNote={ updateNote } notes={ notes } archived={ false }/> }/>
+                <Route path='/notes/:id' render={ ({ match, history })=> <Update match={ match } history={ history } updateNote={ updateNote } notes={ notes } archived={ false }/> }/>
                 <Redirect to='/notes' />
               </Switch>
             </HashRouter>
