@@ -65,16 +65,15 @@ input, button {
                     { note.text}
                     </Link>
                     ) : (
-                    note.text
-                    )
+                      note.text
+                      )
                     }
                     <br />
                     <button onClick={()=> { update({...note, archived: !note.archived})}}>{ archived ? 'unarchive': 'archive' }</button>
                     <button onClick={ ()=> destroy(note)}>destroy</button>
                   </li>)
               }
-            </ul>)
-          }
+            </ul>
           </div>
         );
 
