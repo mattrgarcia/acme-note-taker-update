@@ -58,20 +58,20 @@ input, button {
           <div>
             <ul>
               {
-                notes.filter(note => note.archived === archived).map( note => <li
-                  key={ note.id }>
-                    {!archived ? (
-                    <Link to={`/notes/${ note.id }`}>
-                    { note.text}
-                    </Link>
-                    ) : (
-                      note.text
-                      )
-                    }
-                    <br />
-                    <button onClick={()=> { update({...note, archived: !note.archived})}}>{ archived ? 'unarchive': 'archive' }</button>
-                    <button onClick={ ()=> destroy(note)}>destroy</button>
-                  </li>)
+              notes.filter(note => note.archived === archived).map( note => <li
+                key={ note.id }>
+                  {!archived ? (
+                  <Link to={`/notes/${ note.id }`}>
+                  { note.text}
+                  </Link>
+                  ) : (
+                    note.text
+                    )
+                  }
+                  <br />
+                  <button onClick={()=> { update({...note, archived: !note.archived})}}>{ archived ? 'unarchive': 'archive' }</button>
+                  <button onClick={ ()=> destroy(note)}>destroy</button>
+                </li>)
               }
             </ul>
           </div>
@@ -91,10 +91,12 @@ input, button {
       };
 
       class Update extends Component{
-        constructor(){
+        constructor({ match, notes}){
           super();
+          console.log(match);
+          const found = notes.find( note => note.id === match.params.id);
           this.state = {
-            text: '',
+            text: found ? found.text : '',
             error: ''
           };
           this.update = this.update.bind(this);
@@ -189,7 +191,7 @@ input, button {
                 <Route exact path='/notes' render={ ()=> <Notes destroy={ destroy} archived={ false } notes={ notes} update={ update }/> } />
                 <Route path='/notes/create' render={ ({ history })=> <Create history={ history } create={ create } notes={ notes } /> } />
                 <Route path='/archived' render={ ()=> <Notes destroy={ destroy } archived={ true } notes={ notes} update={ update }/> } />
-                <Route path='/notes/:id' render={ (props)=> <Update {...props} updateNote={ updateNote } notes={ notes } archived={ false }/> }/>
+                <Route path='/notes/:id' render={ ({ match })=> <Update match={ match } updateNote={ updateNote } notes={ notes } archived={ false }/> }/>
                 <Redirect to='/notes' />
               </Switch>
             </HashRouter>
